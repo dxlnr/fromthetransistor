@@ -1,0 +1,17 @@
+ARM
+    Build the assembly file
+    $ arm-linux-gnueabihf-gcc -marm -S testfs/minimal.c -o testfs/minimal_arm.s
+
+    Running arm cross-compiled program using qemu
+    $ arm-linux-gnueabihf-gcc -o fib testfs/fib.c
+    $ qemu-arm -L /usr/arm-linux-gnueabihf ./fib
+
+    Get the register content at end of program (GDB)
+    $ arm-linux-gnueabihf-gcc -ggdb3 -marm -o sub testfs/subtract.c # compile with debug info
+    $ qemu-arm -L /usr/arm-linux-gnueabihf -g 1234 ./sub # (1) start qemu with gdb server 
+
+    $ gdb-multiarch -q --nh -ex 'set architecture arm' -ex 'file sub' -ex 'target remote localhost:1234' -ex 'layout split' -ex 'layout regs' (2) start gdb
+
+    $ (gdb) b main 
+    $ (gdb) c 
+    $ (gdb) stepi

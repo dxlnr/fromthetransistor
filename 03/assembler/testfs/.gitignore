@@ -1,0 +1,5 @@
+*.out
+*.o*
+minimal.o
+minimal
+prime

@@ -786,11 +786,6 @@ module processor
     input wire reset_n,
     output reg trap
 );
-    reg [ARCH-1:0] pc;
-    reg [6:0] step;
-
-    wire [3:0] w_de_nzcv = 4'b0000; // todo
-
     wire            w_fs_reset_n = reset_n;
     wire            w_fs_freeze;
     wire [ARCH-1:0] w_fs_pc;
@@ -971,7 +966,6 @@ module processor
     wire            w_es_reset_n = reset_n;
     wire            w_es_flush;
     wire            w_es_freeze;
-
     wire [ARCH-1:0] w_es_pc;
     wire            w_es_mem_r_en;
     wire            w_es_mem_w_en;
@@ -1009,7 +1003,6 @@ module processor
         .i_mem(w_des_w_f_en),
         .o_nzcv(w_de_nzcv)
     );
-
 
     // *** (4) memory access ***
     memory_stage m (

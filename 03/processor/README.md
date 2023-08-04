@@ -1,6 +1,6 @@
 ## CPU
 
-A 32-bit pipelined ARM processor is implemented in Verilog HDL.
+A 32-bit [pipelined](https://en.wikipedia.org/wiki/Instruction_pipelining) ARM processor is implemented in Verilog HDL.
 
 ```bash
 fetch -> decode -> execute -> memory access -> write back

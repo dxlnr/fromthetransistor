@@ -1,6 +1,10 @@
 ## Linker Implementation
 
-A linker converts object files (`.o` & `.a`) into executables and shared libraries.
+A linker converts object files (`.o` & `.a`) into executables and shared libraries. Meaning it resolves the references between the object files, determines the layout of an executable and writes some metadata.
+
+```
+Reads all the inputs (all the object files) -> identifies the symbols -> applies relocations
+```
 
 1. Parse all the objects and static libraries and put their symbols into cache. Symbols are named addresses of functions and global variables.
 2. Search for all unresolved symbol references in the `.o` files and match it up with a symbol from cache, recursively doing this for any code in `.a` referenced during this process. This forms a dependency graph between sections. This step is called symbol resolution.
@@ -9,5 +13,8 @@ A linker converts object files (`.o` & `.a`) into executables and shared librari
 5. Resolve relocations, “holes” in the binary that require knowing the final runtime address of the section. Relocations are instructions placed in the object file for the linker to execute.
 6. Write out the executable.
 
+#### Relocations
+- Different types within the same object files
+
 ## Sources
-- [Linker Essay](https://lwn.net/Articles/276782/)
+- [Linker Essays](https://lwn.net/Articles/276782/) by Ian Lance Taylor

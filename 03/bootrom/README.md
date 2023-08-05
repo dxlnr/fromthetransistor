@@ -43,6 +43,13 @@ qemu-system-aarch64 -machine -virt -cpu cortex-a7
 qemu-system-riscv64 -machine virt -cpu cortex-a7 -smp 4 -m 128M  -serial mon:stdio -bios none -kernel kernel.elf
 ```
 
+```
+# Compilation 
+arm-linux-gnueabihf-as boot.S -o boot.o
+# Linking
+arm-linux-gnueabihf-ld -T kernel.lds boot.o -o kernel.elf
+```
+
 [ARM mach-virt emulation](https://github.com/qemu/qemu/blob/master/hw/arm/virt.c). This provides the qemu memory layout implementation in a table.
 
 ### NotesThe Player Of Games: A Culture Novel

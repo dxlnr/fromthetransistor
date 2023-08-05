@@ -24,3 +24,6 @@ Run the bash script to investigate the desired output of the assembler.
 ```bash
 ./run_arm32_tests.sh
 ```
+
+## Resources
+- [Compiler Explorer](https://godbolt.org/)

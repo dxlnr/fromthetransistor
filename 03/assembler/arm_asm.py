@@ -546,3 +546,7 @@ if __name__ == "__main__":
         ins = asm32(ts)
 
         [print(f"{idx + 1} %08x " % i) for (idx, i) in enumerate(ins)]
+
+        with open(x + ".o", "wb") as f:
+            for i in ins:
+                f.write(i.to_bytes(4, byteorder="little"))

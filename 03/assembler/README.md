@@ -1,5 +1,8 @@
 ## Assembler
 
+Assembly code is a readable form of the machine language which the computer can execute directly. 
+An **assembler** is used to turn this assembly code into an object file `.o`.
+
 ### Prerequisits
 
 **Cross-Compiler** (if you are not on a ARM architecture natively)

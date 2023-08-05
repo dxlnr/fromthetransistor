@@ -30,10 +30,11 @@ SECTIONS {
 }
 ```
 
-
 ### Setup 
 
-Check out the [Qemu](https://wiki.qemu.org/Documentation/Platforms/ARM) Documentation for ARM.
+Check out the [Qemu](https://wiki.qemu.org/Documentation/Platforms/ARM) Documentation for ARM and the [ARM mach-virt emulation](https://github.com/qemu/qemu/blob/master/hw/arm/virt.c). 
+This provides the qemu memory layout implementation in a table.
+
 ```bash
 # List of available CPUs
 qemu-system-aarch64 -machine virt -cpu help
@@ -50,13 +51,23 @@ arm-linux-gnueabihf-as boot.S -o boot.o
 arm-linux-gnueabihf-ld -T kernel.lds boot.o -o kernel.elf
 ```
 
-[ARM mach-virt emulation](https://github.com/qemu/qemu/blob/master/hw/arm/virt.c). This provides the qemu memory layout implementation in a table.
+```
+# Additional commands for testing
+arm-linux-gnueabihf-as boot.S -o boot.o
+arm-linux-gnueabihf-gcc boot.o -o boot.elf -nostdlib
+qemu-arm -L /usr/arm-linux-gnueabihf/ boot.elf
+```
 
-### NotesThe Player Of Games: A Culture Novel
+### Notes
 - Assembly: A [Calling Convention](https://en.wikipedia.org/wiki/Calling_convention) is an implementation-level (low-level) scheme for how subroutines or functions receive parameters from their caller and how they return a result.
+- ARM32 System Call: 
+    - `swi 0`: Software interrupt: Upon this instruction, the kernel takes an action -> `r7` determines what to do & `r0`-`r4` determines how. For information in the [syscall table](https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md#arm-32_bit_EABI).
+
 This is architecture specific.
 
 ### Additionals
 
+- [OSDev](https://wiki.osdev.org/Expanded_Main_Page)
 - [Tutorial](https://www.cs.ucr.edu/~csong/cs153/20f/lab0.html) on Memory
+- [ebook](https://github.com/umanovskis/baremetal-arm/tree/master) about bare-metal programming for ARM
 - [Turing Complete Game](https://turingcomplete.game/)

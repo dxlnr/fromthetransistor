@@ -7,8 +7,8 @@ RAM_OFFSET = 0x40000000;
 
 SECTIONS
 {
-  .text : {} 
-  .rodata : {}
-  .data : {}
-  .bss : {} 
+	. = RAM_OFFSET;
+	.text : { kernel.o (.text) }
+	.data : { kernel.o (.data) }
+	.bss : { kernel.o (.bss) }
 }

@@ -1,13 +1,16 @@
-.syntax unified
-.cpu cortex-a7
+.section .text
+.globl _start
 
-.equ UART4_TDR, 0x40010028
-
-.section .vector_table, "x"
-.global _Reset
-.global _start
-_Reset:
-    b Reset_Handler
+_start:
+    ldr r0, =0x101f1000
+    mov r1, #0x30
+_welcome:
+    str r1, [r0]
+    add r1, r1, #1
+    and r1, r1, #0x37
+    b _welcome
+_init:
+    b _reset_handler
     b . /* 0x4  Undefined Instruction */
     b . /* Software Interrupt */
     b .  /* 0xC  Prefetch Abort */
@@ -16,10 +19,9 @@ _Reset:
     b . /* 0x18 IRQ */
     b . /* 0x1C FIQ */
 
-.section .text
 _reset_handler:
-	/* UART: print 'A' */
-	ldr r4, =UART4_TDR
-	mov r0, #65
-	str r0, [r4]
 	b .
+
+.section .data
+    welcome: .ascii  "moloch moloch\n\0"
+    len = .-welcome

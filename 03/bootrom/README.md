@@ -73,8 +73,8 @@ qemu-system-arm -M versatilepb -m 128M -nographic -kernel strap.elf
 
 ### Additionals
 
-- ARM Developer Suite Developer Guide: [Writing Code] for ROM
 - [OSDev](https://wiki.osdev.org/Expanded_Main_Page)
 - [Tutorial](https://www.cs.ucr.edu/~csong/cs153/20f/lab0.html) on Memory
 - [Ebook](https://github.com/umanovskis/baremetal-arm/tree/master) about bare-metal programming for ARM
 - [Turing Complete Game](https://turingcomplete.game/)
+- [Blog Post](https://mcyoung.xyz/2021/06/01/linker-script/#memory-regions-and-section-allocation) by Miguel Young de la Sota.

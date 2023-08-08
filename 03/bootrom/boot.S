@@ -1,30 +1,25 @@
+.syntax unified
+.cpu cortex-a7
+
+.equ UART4_TDR, 0x40010028
+
+.section .vector_table, "x"
+.global _Reset
 .global _start
+_Reset:
+    b Reset_Handler
+    b . /* 0x4  Undefined Instruction */
+    b . /* Software Interrupt */
+    b .  /* 0xC  Prefetch Abort */
+    b . /* 0x10 Data Abort */
+    b . /* 0x14 Reserved */
+    b . /* 0x18 IRQ */
+    b . /* 0x1C FIQ */
+
 .section .text
-
-_start:
-    b _reset_handler
-	b .
-
-    ; mov r0, #1
-    ; ldr r1, =welcome
-    ; ldr r2, =len
-    ; mov r7, #4
-    ; swi 0
-
-    mov r7, #1
-    swi 0
-
 _reset_handler:
-	ldr		r1, =0x09000000
-	mov		r2, #0xd
-	str		r2, [r1, #0x24]
-	mov		r2, #0x0300
-	str		r2, [r1, #0x30]
-
-	ldr		r0, =kernel_addr
-	mov		sp, r0
-
-.section .data
-    welcome: .ascii  "moloch moloch\n\0"
-    len = .-welcome
-
+	/* UART: print 'A' */
+	ldr r4, =UART4_TDR
+	mov r0, #65
+	str r0, [r4]
+	b .

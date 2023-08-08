@@ -1,4 +1,4 @@
-_main:
+_start:
     mov r0, #1
     ldr r1, =welcome
     ldr r2, =len

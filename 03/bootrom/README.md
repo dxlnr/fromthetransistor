@@ -1,6 +1,6 @@
 ## Bootrom
 
-BootROM (Boot Read-Only Memory) is a small piece of mask ROM or write-protected flash embedded inside the processor chip. This code is executed when the computer is powered on or reset, and it initializes the hardware and performs basic system checks before the operating system is loaded from the primary storage device, such as the hard drive or solid-state drive.
+[BootROM](https://en.wikipedia.org/wiki/Boot_ROM) (Boot Read-Only Memory) is a small piece of mask ROM or write-protected flash embedded inside the processor chip. This code is executed when the computer is powered on or reset, and it initializes the hardware and performs basic system checks before the operating system is loaded from the primary storage device, such as the hard drive or solid-state drive.
 
 #### Object Files and Sections
 
@@ -56,6 +56,12 @@ arm-linux-gnueabihf-ld -T kernel.lds boot.o -o kernel.elf
 arm-linux-gnueabihf-as boot.S -o boot.o
 arm-linux-gnueabihf-gcc boot.o -o boot.elf -nostdlib
 qemu-arm -L /usr/arm-linux-gnueabihf/ boot.elf
+
+#  
+arm-linux-gnueabi-as --warn --fatal-warnings -march=armv5t strap.s -o strap.o
+arm-linux-gnueabi-ld strap.o -Ttext=0 -o strap.elf
+arm-linux-gnueabi-objdump -D strap.elf > strap.list
+qemu-system-arm -M versatilepb -m 128M -nographic -kernel strap.elf
 ```
 
 ### Notes

@@ -1,5 +1,8 @@
+# Bootloader 
 
-
+1. Load the kernel into memory
+2. Setup the kernel stack
+3. Switch control to the kernel
 
 ## Additionals
 

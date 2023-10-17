@@ -1,10 +1,10 @@
 import System.Environment (getArgs)
 import System.IO (openFile, IOMode(ReadMode), hGetContents)
 import Data.Typeable (typeOf)
+import Data.Char (isDigit, isLetter)
 
--- Tokens : Keywords, Operators, Strings, Constants, Special Characters, Identifiers.
-data Token = Key | Ops | Str | Const | SChar | Ident
-
+-------------------------------------------------------------------------------
+-- Lexer
 data Toks = SDO 
           | SELSE
           | SIF
@@ -21,22 +21,24 @@ data Toks = SDO
           | INT
           | ID
           | EOF
+          | NONE
         deriving (Show, Enum, Bounded)
 
-instance Show Token where 
-    show Key = "Keyword"
-    show Ops = "Operator"
-    show Str = "String"
-    show Const = "Constant"
-    show SChar = "Special Character"
-    show Ident = "Identifier"
-
--------------------------------------------------------------------------------
--- Lexer
-lexer :: Char -> Token
+lexer :: Char -> Toks
 lexer c 
-    | (c == ','|| c == '.'|| c == ';'|| c ==':'|| c =='?'|| c =='*') = SChar
-    | otherwise = Str 
+    | (isDigit c)  = INT
+    | (c == '{')   = LBRA
+    | (c == '}')   = RBRA
+    | (c == '(')   = LPAR
+    | (c == ')')   = RPAR
+    | (c == ';')   = SEMI
+    | (c == '+')   = PLUS
+    | (c == '-')   = MINUS
+    | (c == '=')   = EQUAL
+    | (c == '<')   = LESS
+    | (isLetter c) = ID
+    | (c == '\n')  = EOF
+    | otherwise    = NONE
 
 -- Iterate over every single character.
 l c = [ lexer x | x <- c ]

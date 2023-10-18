@@ -39,23 +39,30 @@ isKword w =
 
 mToks :: Maybe Toks -> Toks
 mToks (Just x) = x
-mToks Nothing  = NONE
+mToks Nothing  = ID 
 
-iWhileAlpha :: [Char] -> [Char] 
-iWhileAlpha [] = []
-iWhileAlpha (c:cs)
-    | isAlpha c = c : iWhileAlpha cs
-    | otherwise = []
+iWhileAlpha :: String -> (String, String)
+iWhileAlpha [] = ([], [])
+iWhileAlpha (x:xs)
+    | isAlpha x =
+        let (w, after) = iWhileAlpha xs
+        in (x:w, after)
+    | otherwise = ([], x:xs)
 
--- getKeyword :: 
--- getKeyword [c]
---     | (isLetter c) = getKeyword c
---     | otherwise = ID
+iWhileDigit:: String -> (String, String)
+iWhileDigit [] = ([], [])
+iWhileDigit (x:xs)
+    | isDigit x =
+        let (w, after) = iWhileDigit xs
+        in (x:w, after)
+    | otherwise = ([], x:xs)
 
 l :: [Char] -> [Toks] 
 l [] = []
 l (c:cs)
-    | (isDigit c)  = INT   : l cs
+    | (isDigit c)  = 
+        let (_, after) = iWhileDigit (c:cs)
+        in INT : l after
     | (c == '{')   = LBRA  : l cs
     | (c == '}')   = RBRA  : l cs
     | (c == '(')   = LPAR  : l cs
@@ -65,9 +72,11 @@ l (c:cs)
     | (c == '-')   = MINUS : l cs
     | (c == '=')   = EQUAL : l cs
     | (c == '<')   = LESS  : l cs
-    | (isLetter c) = mToks (isKword (iWhileAlpha (c:cs))) : l cs
+    | (isLetter c) = 
+        let (w, after) = iWhileAlpha (c:cs)
+        in mToks (isKword w) : l after
     | (c == '\n')  = EOL   : l cs
-    | otherwise    = NONE  : l cs 
+    | otherwise    = l cs 
 
 ---------------------------------------------------------
 -- Parser

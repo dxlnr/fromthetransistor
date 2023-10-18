@@ -1,9 +1,9 @@
 import System.Environment (getArgs)
 import System.IO (openFile, IOMode(ReadMode), hGetContents)
 import Data.Typeable (typeOf)
-import Data.Char (isDigit, isLetter)
+import Data.Char (isDigit, isLetter, toUpper, isAlpha)
 
--------------------------------------------------------------------------------
+---------------------------------------------------------
 -- Lexer
 data Toks = SDO 
           | SELSE
@@ -20,41 +20,65 @@ data Toks = SDO
           | EQUAL
           | INT
           | ID
-          | EOF
+          | EOL
           | NONE
         deriving (Show, Enum, Bounded)
 
-lexer :: Char -> Toks
-lexer c 
-    | (isDigit c)  = INT
-    | (c == '{')   = LBRA
-    | (c == '}')   = RBRA
-    | (c == '(')   = LPAR
-    | (c == ')')   = RPAR
-    | (c == ';')   = SEMI
-    | (c == '+')   = PLUS
-    | (c == '-')   = MINUS
-    | (c == '=')   = EQUAL
-    | (c == '<')   = LESS
-    | (isLetter c) = ID
-    | (c == '\n')  = EOF
-    | otherwise    = NONE
+kwords :: [(Maybe String, Toks)]
+kwords =  [
+    (Just "do", SDO), 
+    (Just "else", SELSE),
+    (Just "if", SIF),
+    (Just "while", SWHILE), 
+    (Nothing, ID)
+    ]
 
--- Iterate over every single character.
-l c = [ lexer x | x <- c ]
+isKword :: String -> Maybe Toks
+isKword w = 
+    lookup (Just w) kwords
 
--------------------------------------------------------------------------------
+mToks :: Maybe Toks -> Toks
+mToks (Just x) = x
+mToks Nothing  = NONE
+
+iWhileAlpha :: [Char] -> [Char] 
+iWhileAlpha [] = []
+iWhileAlpha (c:cs)
+    | isAlpha c = c : iWhileAlpha cs
+    | otherwise = []
+
+-- getKeyword :: 
+-- getKeyword [c]
+--     | (isLetter c) = getKeyword c
+--     | otherwise = ID
+
+l :: [Char] -> [Toks] 
+l [] = []
+l (c:cs)
+    | (isDigit c)  = INT   : l cs
+    | (c == '{')   = LBRA  : l cs
+    | (c == '}')   = RBRA  : l cs
+    | (c == '(')   = LPAR  : l cs
+    | (c == ')')   = RPAR  : l cs
+    | (c == ';')   = SEMI  : l cs
+    | (c == '+')   = PLUS  : l cs
+    | (c == '-')   = MINUS : l cs
+    | (c == '=')   = EQUAL : l cs
+    | (c == '<')   = LESS  : l cs
+    | (isLetter c) = mToks (isKword (iWhileAlpha (c:cs))) : l cs
+    | (c == '\n')  = EOL   : l cs
+    | otherwise    = NONE  : l cs 
+
+---------------------------------------------------------
 -- Parser
 
--------------------------------------------------------------------------------
+---------------------------------------------------------
 -- Code generator
 
-
--------------------------------------------------------------------------------
+---------------------------------------------------------
 -- Virtual machine
 
-
--------------------------------------------------------------------------------
+---------------------------------------------------------
 -- Main program
 main = do
     args <- getArgs

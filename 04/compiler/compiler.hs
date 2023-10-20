@@ -57,29 +57,33 @@ iWhileDigit (x:xs)
         in (x:w, after)
     | otherwise = ([], x:xs)
 
-l :: [Char] -> [Toks] 
-l [] = []
-l (c:cs)
+lx :: [Char] -> [(Toks, String)] 
+lx [] = []
+lx (c:cs)
     | (isDigit c)  = 
-        let (_, after) = iWhileDigit (c:cs)
-        in INT : l after
-    | (c == '{')   = LBRA  : l cs
-    | (c == '}')   = RBRA  : l cs
-    | (c == '(')   = LPAR  : l cs
-    | (c == ')')   = RPAR  : l cs
-    | (c == ';')   = SEMI  : l cs
-    | (c == '+')   = PLUS  : l cs
-    | (c == '-')   = MINUS : l cs
-    | (c == '=')   = EQUAL : l cs
-    | (c == '<')   = LESS  : l cs
+        let (d, after) = iWhileDigit (c:cs)
+        in (INT, d)  : lx after
+    | (c == '{')   = (LBRA, [c])  : lx cs
+    | (c == '}')   = (RBRA, [c])  : lx cs
+    | (c == '(')   = (LPAR, [c])  : lx cs
+    | (c == ')')   = (RPAR, [c])  : lx cs
+    | (c == ';')   = (SEMI, [c])  : lx cs
+    | (c == '+')   = (PLUS, [c])  : lx cs
+    | (c == '-')   = (MINUS, [c]) : lx cs
+    | (c == '=')   = (EQUAL, [c]) : lx cs
+    | (c == '<')   = (LESS, [c])  : lx cs
     | (isLetter c) = 
         let (w, after) = iWhileAlpha (c:cs)
-        in mToks (isKword w) : l after
-    | (c == '\n')  = EOL   : l cs
-    | otherwise    = l cs 
+        in (mToks (isKword w), w) : lx after
+    | (c == '\n')  = (EOL, [c])   : lx cs
+    | otherwise    = lx cs 
 
 ---------------------------------------------------------
 -- Parser
+data AST a = Empty
+           | Node a [AST a]
+        deriving (Show, Eq)
+
 
 ---------------------------------------------------------
 -- Code generator
@@ -95,4 +99,4 @@ main = do
     prog <- hGetContents file
     print prog
     print (typeOf prog)
-    print (l prog)
+    print (lx prog)

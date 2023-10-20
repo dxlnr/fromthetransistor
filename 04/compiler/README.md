@@ -24,7 +24,18 @@ For this project a tiny fraction of C is used. The grammar of Tiny-C in EBNF is:
 ```
 
 (1) **Lexing**
+
+The lexer turns source code into a stream of tokens. 
+
+```bash
+"a=b=c=2<3;\n" 
+    ->  [(ID,"a"),(EQUAL,"="),(ID,"b"),(EQUAL,"="),(ID,"c"),(EQUAL,"="),(INT,"2"),(LESS,"<"),(INT,"3"),(SEMI,";"),(EOL,"\n")]
+```
+
 (2) **Parsing**
+
+The parser takes up the tokens and outputs an abstract syntax tree (AST).
+
 (3) **Code Generation**
 
 ### Run

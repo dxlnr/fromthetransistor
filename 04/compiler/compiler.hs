@@ -22,7 +22,7 @@ data Toks = SDO
           | ID
           | EOL
           | NONE
-        deriving (Show, Enum, Bounded)
+        deriving (Show, Enum, Bounded, Eq)
 
 kwords :: [(Maybe String, Toks)]
 kwords =  [
@@ -63,15 +63,15 @@ lx (c:cs)
     | (isDigit c)  = 
         let (d, after) = iWhileDigit (c:cs)
         in (INT, d)  : lx after
-    | (c == '{')   = (LBRA, [c])  : lx cs
-    | (c == '}')   = (RBRA, [c])  : lx cs
-    | (c == '(')   = (LPAR, [c])  : lx cs
-    | (c == ')')   = (RPAR, [c])  : lx cs
-    | (c == ';')   = (SEMI, [c])  : lx cs
-    | (c == '+')   = (PLUS, [c])  : lx cs
+    | (c == '{')   = (LBRA,  [c]) : lx cs
+    | (c == '}')   = (RBRA,  [c]) : lx cs
+    | (c == '(')   = (LPAR,  [c]) : lx cs
+    | (c == ')')   = (RPAR,  [c]) : lx cs
+    | (c == ';')   = (SEMI,  [c]) : lx cs
+    | (c == '+')   = (PLUS,  [c]) : lx cs
     | (c == '-')   = (MINUS, [c]) : lx cs
     | (c == '=')   = (EQUAL, [c]) : lx cs
-    | (c == '<')   = (LESS, [c])  : lx cs
+    | (c == '<')   = (LESS,  [c]) : lx cs
     | (isLetter c) = 
         let (w, after) = iWhileAlpha (c:cs)
         in (mToks (isKword w), w) : lx after
@@ -80,11 +80,44 @@ lx (c:cs)
 
 ---------------------------------------------------------
 -- Parser
+data Sym = VAR 
+         | CST
+         | ADD
+         | SUB
+         | LT
+         | SET
+         | IF1
+         | IF2
+         | WHILE
+         | DO
+         | EMPTY
+         | SEQ
+         | EXPR
+         | PROG
+        deriving (Show, Enum, Bounded)
+
 data AST a = Empty
            | Node a [AST a]
         deriving (Show, Eq)
 
+insert :: a -> AST a -> AST a
+insert x Empty = Node x []
+insert x (Node y childs) = Node y (childs ++ [Node x []])
 
+par :: [(Toks, String)] -> AST (Toks, String)
+par []     = Empty
+par ((toks, str):ts)
+    | (toks == SIF)    = par ts
+    | (toks == SDO)    = par ts
+    | (toks == SWHILE) = par ts
+    | (toks == LBRA)   = par ts
+    | otherwise = insert (toks, str) (par ts)
+
+-- expr :: [(Toks, String)] -> AST
+-- expr [] = Empty 
+-- expr ((toks, str):ts)
+--     | otherwise = expr ts
+        
 ---------------------------------------------------------
 -- Code generator
 
@@ -99,4 +132,10 @@ main = do
     prog <- hGetContents file
     print prog
     print (typeOf prog)
-    print (lx prog)
+
+    let toks = lx prog
+    let ast  = par toks
+
+    print (toks)
+    putStrLn ""
+    print (ast)

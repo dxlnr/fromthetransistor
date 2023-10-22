@@ -106,6 +106,10 @@ data Node = Node {
         str  :: String 
     } deriving (Show)
 
+next_tok :: [Toks] -> (Toks, [Toks])
+next_tok [] = error "No more tokens."
+next_tok (t:ts) = (t, ts)
+
 -- data AST a = Empty
 --            | Node a [AST a] String
 --         deriving (Show, Eq)
@@ -120,8 +124,7 @@ data Node = Node {
 
 -- <term> ::= <id> | <int> | <paren_expr>
 pterm :: [Toks] -> (Node, [Toks])
-pterm tt@(t:ts) 
-    | trace ("pterm " ++ show t) False = undefined 
+pterm (t:ts) 
     | (tok t == ID)  = (Node VAR Nothing Nothing (v t), ts) 
     | (tok t == INT) = (Node CST Nothing Nothing (v t), ts) 
     | otherwise = expr ts
@@ -135,9 +138,10 @@ psum (t:ts)
 ptest :: [Toks] -> (Node, [Toks])
 ptest (t:ts) =
     let (n, after) = psum (t:ts) 
-    in if tok t == LESS
+        (tt, tafter) = next_tok after
+    in if tok tt == LESS
        then 
-           let (n2, after2) = psum (t:ts)
+           let (n2, after2) = psum tafter
            in (Node LESSTHAN (Just n) (Just n2) "<", after2)
        else (n, after)
 

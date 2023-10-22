@@ -36,6 +36,27 @@ The lexer turns source code into a stream of tokens.
 
 The parser takes up the tokens and outputs an abstract syntax tree (AST).
 
+```bash
+"a=b=c=2<3;\n" 
+ 
+ASSIGN
+|
++-- a
+|
++-- ASSIGN
+    |
+    +-- b
+    |
+    +-- ASSIGN
+        |
+        +-- c
+        |
+        +-- LESSTHAN
+            |
+            +-- 2
+            |
+            +-- 3
+```
 (3) **Code Generation**
 
 ### Run

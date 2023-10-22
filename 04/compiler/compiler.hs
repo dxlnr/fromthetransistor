@@ -96,28 +96,36 @@ data Sym = VAR
          | PROG
         deriving (Show, Enum, Bounded)
 
+-- data Node = Node { kind :: Sym, o1 :: Maybe Node, o2 :: Maybe Node } deriving (Show)
 data AST a = Empty
-           | Node a [AST a]
+           | Node a [AST a] 
         deriving (Show, Eq)
 
-insert :: a -> AST a -> AST a
-insert x Empty = Node x []
-insert x (Node y childs) = Node y (childs ++ [Node x []])
+-- insert :: a -> AST a -> AST a
+-- insert x Empty = Node x []
+-- insert x (Node y childs) = Node y (childs ++ [Node x []])
 
-par :: [(Toks, String)] -> AST (Toks, String)
-par []     = Empty
+insert :: AST a -> AST a -> AST a
+insert x  Empty = x 
+insert x (Node y children) = Node y (x: children)
+
+expr :: [(Toks, String)] -> (AST Sym, [(Toks, String)])
+expr [] = (Empty, [])
+expr ((toks, str):ts)
+    | otherwise = (Node EXPR [], ((toks, str):ts))
+
+par :: [(Toks, String)] -> AST Sym
+par [] = Node PROG []
 par ((toks, str):ts)
     | (toks == SIF)    = par ts
     | (toks == SDO)    = par ts
     | (toks == SWHILE) = par ts
     | (toks == LBRA)   = par ts
-    | otherwise = insert (toks, str) (par ts)
+    | otherwise = 
+        let (n, after) = (expr ((toks, str):ts))
+        in insert n (par after)
+        -- if (toks /= SEMI) then error "syntax error"
 
--- expr :: [(Toks, String)] -> AST
--- expr [] = Empty 
--- expr ((toks, str):ts)
---     | otherwise = expr ts
-        
 ---------------------------------------------------------
 -- Code generator
 

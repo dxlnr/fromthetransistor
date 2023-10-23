@@ -152,15 +152,32 @@ expr (t:ts)
     | otherwise =
         let (n, after) = ptest (t:ts) in
         if kind n == VAR && tok (head after) == EQUAL
-            then let (rhs, more) = expr (after) in
-                 (Node SET (Just n) (Just rhs) "=", (t:more))
+            then let (rn, more) = expr (after) in
+                 (Node SET (Just n) (Just rn) "=", (t:more))
             else (n, after)
+
+-- <paren_expr> ::= "(" <expr> ")"
+exprPar :: [Toks] -> (Node, [Toks])
+exprPar dtt@(t:ts)
+    | trace ("Debugging value of t: " ++ show dtt) False = undefined 
+    | tok t == LPAR =
+        let na@(tt, tafter) = next_tok (t:ts)
+            (nn, nafter) = expr (t:ts)
+            dM = trace ("exprPar na: " ++ show na) ()
+        in dM `seq` 
+        if tok (head nafter) == RPAR
+            then (nn, nafter)
+            else error "syntax error"
+    | otherwise = error "syntax error"
 
 stmt :: [Toks] -> (Node, [Toks]) 
 stmt (t:ts)
      | (tok t == SIF)    = stmt ts
      | (tok t == SDO)    = stmt ts
-     | (tok t == SWHILE) = stmt ts
+     | (tok t == SWHILE) = 
+        (Node WHILE (Just (fst (exprPar (t:ts)))) (Just (fst (stmt ts))) "", ts)
+        
+        
      | (tok t == LBRA)   = stmt ts
      | (tok t == SEMI)   = stmt ts
      | otherwise = 
@@ -168,7 +185,7 @@ stmt (t:ts)
         in (Node EXPR (Just n) Nothing "", ts)
 
 par :: [Toks] -> Node 
-par [] = error "Syntax error." 
+par [] = error "No source code provided." 
 par (t:ts)
     | (tok t == EOL) = error "syntax error"
     | otherwise =
